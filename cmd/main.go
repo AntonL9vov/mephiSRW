@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"log"
 	"mephiSRW"
 	"mephiSRW/pkg/handler"
 	"mephiSRW/pkg/repository"
@@ -13,12 +13,13 @@ import (
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
 	if err := initConfig(); err != nil {
-		log.Fatalf("error intializing config: %s", err.Error())
+		logrus.Fatalf("error intializing config: %s", err.Error())
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("error loading env varibles: %s", err.Error())
+		logrus.Fatalf("error loading env varibles: %s", err.Error())
 	}
 	db, err := repository.NewPostgresDB(repository.Config{
 		Host:     viper.GetString("db.host"),
@@ -29,14 +30,14 @@ func main() {
 		SSLMode:  viper.GetString("db.sslmode"),
 	})
 	if err != nil {
-		log.Fatalf("Fatal to connect to DB, because: %s", err.Error())
+		logrus.Fatalf("Fatal to connect to DB, because: %s", err.Error())
 	}
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
 	srv := new(mephiSRW.Server)
 	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("Problem with start server, because %s", err.Error())
+		logrus.Fatalf("Problem with start server, because %s", err.Error())
 	}
 }
 

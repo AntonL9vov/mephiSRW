@@ -5,6 +5,6 @@ type User struct {
 	Name     string `json:"name" binding:"required"`
 	Login    string `json:"login" binding:"required"`
 	Email    string `json:"email" binding:"required"`
-	phone    string `json:"group_id"`
+	Phone    string `json:"phone"`
 	Password string `json:"password" binding:"required"`
 }

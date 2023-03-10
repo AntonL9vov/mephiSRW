@@ -1,14 +1,20 @@
 package service
 
-import "mephiSRW/pkg/repository"
+import (
+	"mephiSRW/pkg/model"
+	"mephiSRW/pkg/repository"
+)
 
 type Authorization interface {
+	CreateUser(user model.User) (int, error)
 }
 
 type Service struct {
 	Authorization
 }
 
-func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+func NewService(repo *repository.Repository) *Service {
+	return &Service{
+		Authorization: NewAuthService(repo.Authorization),
+	}
 }

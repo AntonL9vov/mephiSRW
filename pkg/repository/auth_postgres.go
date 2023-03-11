@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"golang.org/x/crypto/bcrypt"
 	"mephiSRW/pkg/model"
 )
 
@@ -25,11 +24,10 @@ func (r *AuthPostgres) CreateUser(user model.User) (int, error) {
 	return id, nil
 }
 
-func (r *AuthPostgres) GetUser(login, password string) (model.User, error) {
+func (r *AuthPostgres) GetUser(login string) (model.User, error) {
 	var user model.User
 	query := fmt.Sprintf("SELECT * FROM %s WHERE login = $1", userTable)
-	r.db.Get(&user, query, login)
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err := r.db.Get(&user, query, login)
 	if err != nil {
 		return model.User{}, err
 	}

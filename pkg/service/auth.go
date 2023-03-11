@@ -40,7 +40,11 @@ func (s *AuthService) generatePasswordHash(password string) string {
 }
 
 func (s *AuthService) GenerateToken(login, password string) (string, error) {
-	user, err := s.repo.GetUser(login, password)
+	user, err := s.repo.GetUser(login)
+	if err != nil {
+		return "", err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return "", err
 	}
